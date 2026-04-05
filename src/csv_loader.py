@@ -9,6 +9,8 @@ from schema_manager import SchemaManager
 
 @dataclass
 class LoadResult:
+    # Store the result of loading one CSV file
+    
     success: bool
     table_name: str | None = None
     rows_inserted: int = 0
@@ -104,11 +106,6 @@ class CSVLoader:
         except Exception as e:
             return LoadResult(success=False, error=str(e))
 
-    def preview_csv(self, csv_path: str, n: int = 5) -> pd.DataFrame:
-        # Return the first few rows of a CSV file
-
-        return pd.read_csv(csv_path).head(n)
-
     def _table_exists(self, cursor: sqlite3.Cursor, table_name: str) -> bool:
         # Check whether a table already exists in SQLite
 
@@ -157,21 +154,3 @@ class CSVLoader:
             name = f"{base_name}_{index}"
             index += 1
         return name
-
-
-def main() -> None:
-    loader = CSVLoader("example.db")
-    result = loader.load_csv(csv_path="products.csv", table_name="products", if_exists="replace")
-
-    if result.success:
-        print("CSV loaded successfully.")
-        print(f"Table name: {result.table_name}")
-        print(f"Rows inserted: {result.rows_inserted}")
-        print(f"Columns: {result.columns}")
-    else:
-        print("Failed to load CSV.")
-        print(f"Error: {result.error}")
-
-
-if __name__ == "__main__":
-    main()
